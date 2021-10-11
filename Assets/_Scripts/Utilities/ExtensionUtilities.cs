@@ -12,6 +12,10 @@ public static class ExtensionUtilities
         else
             target.SetActive(true);
     }
+    public static void Toggle(this ref bool target)
+    {
+        target = !target;
+    }
 
     public static void Toggle(this GameObject target, bool toState)
     {

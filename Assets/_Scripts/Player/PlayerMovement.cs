@@ -23,7 +23,7 @@ public class PlayerMovement : MonoBehaviour
     bool isGrounded;
 
     //Stops movement when set to false
-    static bool isPaused;
+    public bool movementLock;
 
     //player GameObject singleton
     public static PlayerMovement instance;
@@ -41,14 +41,12 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Update()
     {
-        if (!isPaused)
-        {
-            WalkingAndJumping();
+        if (!movementLock)
             Crouching();
-        }
+        WalkingAndJumping();
     }
 
-    public static void DisableControls(bool toState) => isPaused = toState;
+    //public static void DisableControls(bool toState) => isPaused = toState;
 
     void WalkingAndJumping()
     {
@@ -59,11 +57,13 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 move = transform.right * x + transform.forward * z;
 
-        rb.AddForce(move * speed * Time.deltaTime, ForceMode.VelocityChange);
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (isGrounded)
         {
-            rb.AddForce(new Vector3(0, jumpForce));
+            rb.velocity = movementLock ? rb.velocity : move * speed + new Vector3(0, rb.velocity.y, 0);
+
+            if(Input.GetButtonDown("Jump") && !movementLock)
+                rb.AddForce(new Vector3(0, jumpForce));
         }
 
         //Sprint

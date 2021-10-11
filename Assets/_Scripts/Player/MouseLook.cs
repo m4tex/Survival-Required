@@ -7,7 +7,8 @@ public class MouseLook : MonoBehaviour
     float xRotation = 0;
     public static MouseLook instance;
 
-    private bool cameraLock;
+    public bool cameraLock;
+    private bool cursorLocked;
 
     void Start()
     {
@@ -30,6 +31,18 @@ public class MouseLook : MonoBehaviour
 
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
+        if(cameraLock && cursorLocked)
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+            Time.timeScale = 0;
+            cursorLocked = false;
+        }
+        else if(!cameraLock && !cursorLocked)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Time.timeScale = 1;
+            cursorLocked = true;
+        }
         if (!cameraLock)
         {
             transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
@@ -37,7 +50,7 @@ public class MouseLook : MonoBehaviour
         }
     }
 
-    public void LockCamera(bool toState) => cameraLock = toState;
+    //public void LockCamera(bool toState) => cameraLock = toState;
 
     public void SetXRotation(float value) => xRotation = value;
 }

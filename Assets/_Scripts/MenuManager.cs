@@ -43,7 +43,7 @@ public class MenuManager : MonoBehaviour
     public void DisplaySaves()
     {
         Save[] saveFiles;
-        if (Saving.instance.TryReadSaveFiles(out saveFiles))
+        if (Saving.TryReadSaveFiles(out saveFiles))
         {
             foreach (Save save in saveFiles)
             {
@@ -53,7 +53,7 @@ public class MenuManager : MonoBehaviour
                     slotDis.GetComponentInChildren<TMP_Text>().text = save.saveName;
                     int index;
                     if (saveFiles.TryFindIndex(save, out index))
-                        slotDis.GetComponent<Button>().onClick.AddListener(delegate { Saving.instance.LoadSave(index); });
+                        slotDis.GetComponent<Button>().onClick.AddListener(delegate { Saving.LoadSave(index); });
                     else
                         Debug.LogError("Couldn't find the index of the save slot");
                 }

@@ -5,29 +5,23 @@ using UnityEngine.SceneManagement;
 
 public class Saving : MonoBehaviour
 {
-
-    public int saveID = 0;
-    public Save[] loadedSaves;
+    public static int saveID = 0;
+    public static Save[] loadedSaves;
     public static Saving instance;
 
     private void Start()
     {
+        if (instance != null)
+            Destroy(this.gameObject);
+        else
+            instance = this;
         DontDestroyOnLoad(this.gameObject);
-        instance = this;
         if (!TryReadSaveFiles(out loadedSaves))
             loadedSaves = new Save[8];
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.N))
-            WriteSaveFile(UpdateSaveFile());
-        if (Input.GetKeyDown(KeyCode.M))
-            LoadSave(saveID);
-    }
-
     //Writes all the save data to memory.
-    public void WriteSaveFile(Save[] sf)
+    public static void WriteSaveFile(Save[] sf)
     {
         BinaryFormatter bf = new BinaryFormatter();
         FileStream fileStream = File.Create(Application.dataPath + "/saveData.dat");
@@ -36,7 +30,7 @@ public class Saving : MonoBehaviour
     }
 
     //Tries to read the data from memory and returns a boolean. Can also output the save file if the read was successful.
-    public bool TryReadSaveFiles(out Save[] saves)
+    public static bool TryReadSaveFiles(out Save[] saves)
     {
         if (File.Exists(Application.dataPath + "/saveData.dat"))
         {
@@ -55,7 +49,7 @@ public class Saving : MonoBehaviour
     }
 
     //Updates the variables in the current save slot and returns the Saves array.
-    public Save[] UpdateSaveFile()
+    public static Save[] UpdateSaveFile()
     {
         loadedSaves[saveID].isUsed = true;
         loadedSaves[saveID].mapIndex = SceneManager.GetActiveScene().buildIndex;
@@ -69,19 +63,20 @@ public class Saving : MonoBehaviour
     }
 
     //Apllies the read data (2 methods below)
-    public void LoadSave(int slotID)
+    public static void LoadSave(int slotID)
     {
         saveID = slotID;
         SceneManager.LoadScene(loadedSaves[slotID].mapIndex);
         SceneManager.sceneLoaded += ApplySave;
     }
 
-    public void ApplySave(Scene scene, LoadSceneMode mode)
+    public static void ApplySave(Scene scene, LoadSceneMode mode)
     {
         InGameManager.player.transform.position = loadedSaves[saveID].GetVectorData(Save.VType.playerPos);
         InGameManager.player.transform.eulerAngles = new Vector3(0, loadedSaves[saveID].GetVectorData(Save.VType.playerRot).y, 0);
         InGameManager.player.GetComponent<Rigidbody>().velocity = loadedSaves[saveID].GetVectorData(Save.VType.playerVel);
         Camera.main.GetComponent<MouseLook>().SetXRotation(loadedSaves[saveID].GetVectorData(Save.VType.playerRot).x);
+        SceneManager.sceneLoaded -= ApplySave;
     }
 
     public void CreateNewSave(Save initalData)

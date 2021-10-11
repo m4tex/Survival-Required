@@ -6,10 +6,10 @@ public class Save
     //Save info
     public bool isUsed = false;
     public string saveName;
-    //Used to load the correct environment. Should be changed after introducing procedural generation of the map.
+    public DateTime creationDate;
+    //Used to load the correct environment. Should be changed after introducing procedural generation of the map (Heatmap, seed etc.)
     public int mapIndex;
 
-    public DateTime lastPlayed;
     public TimeSpan timeSpent;
 
     //Player position
@@ -34,6 +34,11 @@ public class Save
     #region Help Methods
     public enum VType { playerPos, playerRot, playerVel };
     
+    //public Texture GetThumbnail()
+    //{
+    //    return
+    //}
+
     //Binary Formatter used for saving the important data can't accept Vector3's, these methods are converting the separate int's into Vector3's for further usage.
     public Vector3 GetVectorData(VType vd)
     {
