@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public Rigidbody controller;
+    public Rigidbody rb;
 
     public float speed = 12f;
-    public float gravity = -9.81f;
-    public float jumpHeight = 3f;
+    public float jumpForce = 3f;
 
     //sprint
-    public float sprintSpeedMultiplier;
+    public float sprintMultiplier;
     private bool isRunning;
     //Stamina
     public float maxStamina, stamina;
@@ -21,7 +20,6 @@ public class PlayerMovement : MonoBehaviour
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
 
-    Vector3 velocity;
     bool isGrounded;
 
     //Stops movement when set to false
@@ -56,39 +54,32 @@ public class PlayerMovement : MonoBehaviour
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
-        if (isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f;
-        }
-
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
         Vector3 move = transform.right * x + transform.forward * z;
 
-        controller.AddForce(move * speed);
+        rb.AddForce(move * speed * Time.deltaTime, ForceMode.VelocityChange);
 
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            rb.AddForce(new Vector3(0, jumpForce));
         }
-
-        controller.AddForce(velocity);
 
         //Sprint
         if (Input.GetKeyDown(KeyCode.LeftShift) && x + z != 0 && staminaDelayCounter <= 0 && !isRunning)
         {
-            speed *= sprintSpeedMultiplier;
+            speed *= sprintMultiplier;
             isRunning = true;
         }
         if (isRunning && x + z == 0)
         {
-            speed /= sprintSpeedMultiplier;
+            speed /= sprintMultiplier;
             isRunning = false;
         }
         if (isRunning && stamina <= 0)
         {
-            speed /= sprintSpeedMultiplier;
+            speed /= sprintMultiplier;
             isRunning = false;
             staminaDelayCounter = staminaDelay;
         }
