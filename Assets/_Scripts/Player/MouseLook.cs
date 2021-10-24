@@ -3,8 +3,8 @@ using UnityEngine;
 public class MouseLook : MonoBehaviour
 {
     public float mouseSensitivity = 1f;
-    public Transform playerBody;
-    float xRotation = 0;
+    //public Transform playerBody;
+    float xRotation = 0, yRotation = 0;
     public static MouseLook instance;
 
     public bool cameraLock;
@@ -28,6 +28,7 @@ public class MouseLook : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
         xRotation -= mouseY;
+        yRotation += mouseX;
 
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
@@ -45,8 +46,8 @@ public class MouseLook : MonoBehaviour
         }
         if (!cameraLock)
         {
-            transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-            playerBody.transform.Rotate(Vector3.up * mouseX);
+            transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
+            //playerBody.transform.Rotate(Vector3.up * mouseX);
         }
     }
 

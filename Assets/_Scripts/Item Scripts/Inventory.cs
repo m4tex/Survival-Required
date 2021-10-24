@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour 
 {
-    private List<ItemContainer> items = new List<ItemContainer>();
+    private List<IStorable> items = new List<IStorable>();
 }

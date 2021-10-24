@@ -9,7 +9,6 @@ public class ItemContainer : MonoBehaviour
     public MaxItemSize maxItemSize;
 
     public GameObject m1, m2;
-    public Collider interCollider;
 
     private HashSet<Collider> colliders = new HashSet<Collider>();
     public HashSet<Collider> GetColliders() { return colliders; }

@@ -5,6 +5,9 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public Rigidbody rb;
+    //this is the camera trasform. It's used to determine where 'forward' is, checking the player's rotation will not work since the game object itself is not rotating.
+    //That's because it caused some collision issues like: the player starts spinning uncontrollably after a collision with rigidbodies.
+    public Transform forward;
 
     public float speed = 12f;
     public float jumpForce = 3f;
@@ -46,8 +49,6 @@ public class PlayerMovement : MonoBehaviour
         WalkingAndJumping();
     }
 
-    //public static void DisableControls(bool toState) => isPaused = toState;
-
     void WalkingAndJumping()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
@@ -55,7 +56,8 @@ public class PlayerMovement : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
-        Vector3 move = transform.right * x + transform.forward * z;
+        Vector3 move = forward.right * x + forward.forward * z;
+        move.y = 0;
 
 
         if (isGrounded)
