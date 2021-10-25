@@ -51,7 +51,5 @@ public class MouseLook : MonoBehaviour
         }
     }
 
-    //public void LockCamera(bool toState) => cameraLock = toState;
-
     public void SetXRotation(float value) => xRotation = value;
 }
