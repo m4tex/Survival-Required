@@ -9,9 +9,15 @@ public class Pickable : MonoBehaviour
     float distance;
 
     public bool canHold = true;
-    public GameObject item;
-    public GameObject tempParent;
+    private GameObject item;
+    private GameObject tempParent;
     public bool isHolding = false;
+
+    private void Start()
+    {
+        item = this.gameObject;
+        tempParent = Camera.main.transform.GetChild(0).gameObject;
+    }
 
     // Update is called once per frame
     void Update()

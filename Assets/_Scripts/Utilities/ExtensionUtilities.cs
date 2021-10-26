@@ -102,4 +102,21 @@ public static class ExtensionUtilities
         index = 0;
         return false;
     }
+
+    public static void DestroyChildren(this Transform target)
+    {
+        for (int i = 0; i < target.childCount; i++)
+        {
+            Object.Destroy(target.GetChild(i));
+        }
+    }
+
+    public static void DestroyChildren(this Transform target, int excludingIndex)
+    {
+        for (int i = 0; i < target.childCount; i++)
+        {
+            if(i != excludingIndex)
+                Object.Destroy(target.GetChild(i));
+        }
+    }
 }

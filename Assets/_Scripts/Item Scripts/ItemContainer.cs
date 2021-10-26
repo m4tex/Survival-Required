@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemContainer : MonoBehaviour
+public class ItemContainer : MonoBehaviour, IInteractable
 {
+
     public List<GameObject> items;
     public enum MaxItemSize { Small, Normal, Large, ExtraLarge }
     public MaxItemSize maxItemSize;
@@ -11,8 +12,21 @@ public class ItemContainer : MonoBehaviour
     public GameObject m1, m2;
 
     private HashSet<Collider> colliders = new HashSet<Collider>();
+
+
     public HashSet<Collider> GetColliders() { return colliders; }
 
+    public Dictionary<string, IInteractable.Interaction> interactions { get; set; } = new Dictionary<string, IInteractable.Interaction>();//interface implementation
+
+    private void Start()
+    {
+        interactions.Add("Open Container", OpenContainer);
+        interactions.Add("Close Container", CloseContainer);
+        interactions.Add("Empty1", null);
+        interactions.Add("Empty2", null);
+        interactions.Add("Empty3", null);
+
+    }
 
     public float GetWeight()
     {
