@@ -1,65 +1,69 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Pickable : MonoBehaviour
 {
     float throwForce = 600;
-    Vector3 objectPos;
     float distance;
 
+    public float force = 10;
+
     public bool canHold = true;
-    private GameObject item;
-    private GameObject tempParent;
-    public bool isHolding = false;
+    private bool isHolding = false;
+
+    private Transform tempParent;
+    private Rigidbody rb;
+
+    private Vector3 iniRot;
 
     private void Start()
     {
-        item = this.gameObject;
-        tempParent = Camera.main.transform.GetChild(0).gameObject;
+        tempParent = Camera.main.transform.GetChild(0);
+        rb = transform.GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        distance = Vector3.Distance(item.transform.position, tempParent.transform.position);
+        distance = Vector3.Distance(transform.position, tempParent.transform.position);
 
-        if (distance >= 1f)
+        if (distance >= 10f)
         {
             isHolding = false;
         }
 
         //Check if it's holding
-        if (isHolding == true)
+        if (isHolding)
         {
-            item.GetComponent<Rigidbody>().velocity = Vector3.zero;
-            item.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-            item.transform.SetParent(tempParent.transform);
+            rb.angularVelocity = Vector3.zero;
+            rb.velocity = (tempParent.position - transform.position) * force;
+            
 
             if (Input.GetMouseButtonDown(1))
             {
-                item.GetComponent<Rigidbody>().AddForce(tempParent.transform.forward * throwForce);
+                rb.AddForce(tempParent.forward * throwForce);
                 isHolding = false;
             }
         }
         else
-        {
-            objectPos = item.transform.position;
-            item.transform.SetParent(null);
-            item.GetComponent<Rigidbody>().useGravity = true;
-            item.transform.position = objectPos;
-        }
+            rb.useGravity = true;
     }
 
     public void Interact()
     {
-        if (isHolding)
-            isHolding = false;
-        else
+        if (canHold)
         {
-            isHolding = true;
-            item.GetComponent<Rigidbody>().useGravity = false;
-            item.GetComponent<Rigidbody>().detectCollisions = true;
+            if (isHolding)
+                isHolding = false;
+            else
+            {
+                isHolding = true;
+                iniRot = transform.eulerAngles;
+                rb.useGravity = false;
+                rb.detectCollisions = true;
+            }
         }
     }
 }

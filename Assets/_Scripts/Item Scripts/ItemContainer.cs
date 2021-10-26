@@ -10,19 +10,19 @@ public class ItemContainer : MonoBehaviour, IInteractable
     public MaxItemSize maxItemSize;
 
     public GameObject m1, m2;
+    private Rigidbody rb;
 
     private HashSet<Collider> colliders = new HashSet<Collider>();
-
-
     public HashSet<Collider> GetColliders() { return colliders; }
 
+    //Interaction interface implementation
     public Dictionary<string, IInteractable.Interaction> interactions { get; set; } = new Dictionary<string, IInteractable.Interaction>();//interface implementation
 
     private void Start()
     {
+        rb = GetComponent<Rigidbody>();
         interactions.Add("Open Container", OpenContainer);
         interactions.Add("Close Container", CloseContainer);
-
     }
 
     public float GetWeight()
@@ -37,6 +37,7 @@ public class ItemContainer : MonoBehaviour, IInteractable
     {
         m1.Toggle(false);
         m2.Toggle(true);
+        rb.isKinematic = false;
 
         foreach (Collider item in colliders)
         {
@@ -53,6 +54,7 @@ public class ItemContainer : MonoBehaviour, IInteractable
     {
         m1.Toggle(true);
         m2.Toggle(false);
+        rb.isKinematic = true;
 
         foreach (GameObject item in items)
         {
@@ -60,7 +62,6 @@ public class ItemContainer : MonoBehaviour, IInteractable
             item.transform.parent = null;
         }
     }
-
 
     private void OnTriggerEnter(Collider other) =>
         colliders.Add(other); //hashset automatically handles duplicates

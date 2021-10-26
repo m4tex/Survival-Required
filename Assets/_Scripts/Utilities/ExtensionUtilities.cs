@@ -112,6 +112,18 @@ public static class ExtensionUtilities
         return false;
     }
 
+    public static int FindIndex<T>(this T[] array, T value)
+    {
+        for (int i = 0; i < array.Length - 1; i++)
+        {
+            if (EqualityComparer<T>.Default.Equals(array[i], value)) //think of this as of if(array[i] == value)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public static void DestroyChildren(this Transform target)
     {
         for (int i = 0; i < target.childCount; i++)

@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System;
 
 public class Interaction : MonoBehaviour
 {
@@ -22,7 +23,9 @@ public class Interaction : MonoBehaviour
     public GameObject[] wheelSelections;
     public static Interaction ins;
     private float degreesPerItem;
-    private int currentSelection;
+    private int currentSelection = -1;
+
+    private KeyValuePair<string, IInteractable.Interaction>[] interArr;
 
     private void Awake() =>
         ins = this;
@@ -40,21 +43,28 @@ public class Interaction : MonoBehaviour
                     CreateInteractionWheel(interactable);
 
         if (Input.GetKeyUp(KeyCode.F))
-        {
             if (wheelActive)
-            {
-                interWheel.GetChild(2).DestroyChildren();
-                interWheel.gameObject.Toggle(false);
-                cam.GetComponent<MouseLook>().cameraLock = false;
-                wheelActive = false;
-            }
-        }
+                CloseWheel();
 
         if (wheelActive)
         {
             int id = CheckClosestButton();
             SelectOnWheel(id);
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                interArr[id].Value();
+                CloseWheel();
+            }
         }
+    }
+
+    private void CloseWheel()
+    {
+        interWheel.GetChild(2).DestroyChildren();
+        interWheel.gameObject.Toggle(false);
+        cam.GetComponent<MouseLook>().cameraLock = false;
+        wheelActive = false;
     }
 
     private void CreateInteractionWheel(IInteractable inter)
@@ -64,7 +74,7 @@ public class Interaction : MonoBehaviour
 
         cam.GetComponent<MouseLook>().cameraLock = true;
 
-        KeyValuePair<string, IInteractable.Interaction>[] interArr = inter.interactions.ToArray();
+        interArr = inter.interactions.ToArray();
 
         wheelSelections = new GameObject[interArr.Length];
 
@@ -78,7 +88,6 @@ public class Interaction : MonoBehaviour
             interactionUI.transform.Rotate(new Vector3(0, 0, degreesPerItem * i));
             interactionUI.transform.localPosition = interactionUI.transform.up * 288f;
             interactionUI.transform.eulerAngles = Vector3.zero;
-            interactionUI.GetComponent<InteractionUI>().Setup(interDescText, interArr[i], i);
 
             wheelSelections[i] = interactionUI;
         }
@@ -86,6 +95,7 @@ public class Interaction : MonoBehaviour
         wheelActive = true;
     }
 
+    //make this a for loop to simplify and remove FindIndex
     public int CheckClosestButton()
     {
         GameObject nearestButton = null;
@@ -105,7 +115,7 @@ public class Interaction : MonoBehaviour
             }
         }
 
-        return nearestButton.GetComponent<InteractionUI>().selID;
+        return wheelSelections.FindIndex(nearestButton);
     }
 
     public void SelectOnWheel(int id)
@@ -113,7 +123,7 @@ public class Interaction : MonoBehaviour
         if(id != currentSelection)
         {
             interSelection.transform.DOLocalRotate(new Vector3(0, 0, id * degreesPerItem - degreesPerItem / 2), 0.1f);
-            interDescText.text = wheelSelections[id].GetComponent<InteractionUI>().interactionDesc;
+            interDescText.text = interArr[id].Key;
             currentSelection = id;
         }
     }
