@@ -35,13 +35,11 @@ public class MouseLook : MonoBehaviour
         if(cameraLock && cursorLocked)
         {
             Cursor.lockState = CursorLockMode.Confined;
-            Time.timeScale = 0;
             cursorLocked = false;
         }
         else if(!cameraLock && !cursorLocked)
         {
             Cursor.lockState = CursorLockMode.Locked;
-            Time.timeScale = 1;
             cursorLocked = true;
         }
         if (!cameraLock)

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Interaction : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class Interaction : MonoBehaviour
     public GameObject[] wheelSelections;
     public static Interaction ins;
     private float degreesPerItem;
+    private int currentSelection;
 
     private void Awake() =>
         ins = this;
@@ -41,9 +43,10 @@ public class Interaction : MonoBehaviour
         {
             if (wheelActive)
             {
-                interWheel.DestroyChildren(0);
+                interWheel.GetChild(2).DestroyChildren();
                 interWheel.gameObject.Toggle(false);
                 cam.GetComponent<MouseLook>().cameraLock = false;
+                wheelActive = false;
             }
         }
 
@@ -53,39 +56,6 @@ public class Interaction : MonoBehaviour
             SelectOnWheel(id);
         }
     }
-
-    #region debug
-    private void CreateDebugInterWheel()
-    {
-        cam.GetComponent<MouseLook>().cameraLock = true;
-
-        interWheel.gameObject.Toggle(true);
-
-        Dictionary<string, int> inter = new Dictionary<string, int>();
-        inter.Add("inter1", 0);
-        inter.Add("inter2", 1);
-        inter.Add("inter3", 2);
-        inter.Add("inter4", 3);
-        inter.Add("inter5", 4);
-        inter.Add("inter6", 4);
-        inter.Add("inter7", 4);
-        inter.Add("inter8", 4);
-        inter.Add("inter9", 4);
-        inter.Add("inter10", 4);
-
-        float degreesPerItem = 360f / inter.Count;
-
-        for (int i = 0; i < inter.Count; i++)
-        {
-            GameObject interactionUI = Instantiate(interactionUIPrefab, interWheel);
-            interactionUI.transform.Rotate(new Vector3(0, 0, degreesPerItem * i));
-            interactionUI.transform.localPosition = interactionUI.transform.up * 288f;
-            interactionUI.transform.eulerAngles = Vector3.zero;
-            interactionUI.GetComponent<InteractionUI>().interDescText = interDescText;
-            interactionUI.GetComponent<InteractionUI>().interactionDesc = inter.Keys.ElementAt(i);
-        }
-    }
-    #endregion
 
     private void CreateInteractionWheel(IInteractable inter)
     {
@@ -104,7 +74,7 @@ public class Interaction : MonoBehaviour
 
         for (int i = 0; i < interArr.Length; i++)
         {
-            GameObject interactionUI = Instantiate(interactionUIPrefab, interWheel);
+            GameObject interactionUI = Instantiate(interactionUIPrefab, interWheel.GetChild(2));
             interactionUI.transform.Rotate(new Vector3(0, 0, degreesPerItem * i));
             interactionUI.transform.localPosition = interactionUI.transform.up * 288f;
             interactionUI.transform.eulerAngles = Vector3.zero;
@@ -140,9 +110,11 @@ public class Interaction : MonoBehaviour
 
     public void SelectOnWheel(int id)
     {
-        interSelection.transform.localEulerAngles = new Vector3(0, 0, id * degreesPerItem - degreesPerItem / 2);
-        interDescText.text = wheelSelections[id].GetComponent<InteractionUI>().interactionDesc;
-
-        
+        if(id != currentSelection)
+        {
+            interSelection.transform.DOLocalRotate(new Vector3(0, 0, id * degreesPerItem - degreesPerItem / 2), 0.1f);
+            interDescText.text = wheelSelections[id].GetComponent<InteractionUI>().interactionDesc;
+            currentSelection = id;
+        }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public static class ExtensionUtilities
 
@@ -29,6 +30,14 @@ public static class ExtensionUtilities
             item.Toggle(false);
         }
         target.Toggle(true);
+    }
+
+    public static T ToggleBetween<T>(this T target, T x, T y) where T : struct
+    {
+        if (target.Equals(x))
+            return y;
+        else
+            return x;
     }
 
     public static IEnumerable ToggleForSeconds(this GameObject target, float time)
@@ -107,7 +116,7 @@ public static class ExtensionUtilities
     {
         for (int i = 0; i < target.childCount; i++)
         {
-            Object.Destroy(target.GetChild(i));
+            Object.Destroy(target.GetChild(i).gameObject);
         }
     }
 
@@ -116,7 +125,7 @@ public static class ExtensionUtilities
         for (int i = 0; i < target.childCount; i++)
         {
             if(i != excludingIndex)
-                Object.Destroy(target.GetChild(i));
+                Object.Destroy(target.GetChild(i).gameObject);
         }
     }
 }

@@ -32,6 +32,7 @@ public class InGameManager : MonoBehaviour
     {
         escMenu.Toggle();
         blurDepth.active.Toggle();
+        Time.timeScale = Time.timeScale.ToggleBetween(0, 1);
         PlayerMovement.instance.movementLock.Toggle();
         MouseLook.instance.cameraLock.Toggle();
     }

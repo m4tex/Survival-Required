@@ -22,9 +22,6 @@ public class ItemContainer : MonoBehaviour, IInteractable
     {
         interactions.Add("Open Container", OpenContainer);
         interactions.Add("Close Container", CloseContainer);
-        interactions.Add("Empty1", null);
-        interactions.Add("Empty2", null);
-        interactions.Add("Empty3", null);
 
     }
 
