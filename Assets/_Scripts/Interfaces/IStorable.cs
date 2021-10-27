@@ -6,5 +6,5 @@ public interface IStorable
 {
     public float Weight { get; set; }
     public string ItemName { get; set; }
-    public Outline InteractionOutline { get; set; }
+    public string ItemDescription { get; set; }
 }

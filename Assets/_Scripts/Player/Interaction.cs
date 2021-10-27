@@ -13,6 +13,11 @@ public class Interaction : MonoBehaviour
     RaycastHit hit;
     Pickable pickable;
     IInteractable interactable;
+    IOutlinable outlinable;
+    IOutlinable oldOutlinable;
+
+
+    bool outlineActive;
 
     bool wheelActive;
     public Transform interWheel;
@@ -32,19 +37,34 @@ public class Interaction : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-            if (Physics.Raycast(cam.position, cam.forward, out hit))
+        if(Physics.Raycast(cam.position, cam.forward, out hit))
+        {
+            if(Input.GetKeyDown(KeyCode.E))
                 if (hit.transform.root.TryGetComponent<Pickable>(out pickable))
                     pickable.Interact();
 
-        if (Input.GetKeyDown(KeyCode.F))
-            if (Physics.Raycast(cam.position, cam.forward, out hit))
+            if (Input.GetKeyDown(KeyCode.F))
                 if (hit.transform.root.TryGetComponent<IInteractable>(out interactable))
                     CreateInteractionWheel(interactable);
 
-        if (Input.GetKeyUp(KeyCode.F))
-            if (wheelActive)
-                CloseWheel();
+            if(hit.transform.root.TryGetComponent<IOutlinable>(out outlinable))
+            {
+                outlinable.OutlineComp.OutlineMode = Outline.Mode.OutlineVisible;
+                outlineActive = true;
+                oldOutlinable = outlinable;
+            }
+            else if (outlinable == null && outlineActive)
+            {
+                oldOutlinable.OutlineComp.OutlineMode = Outline.Mode.OutlineHidden;
+                outlineActive = false;
+            }
+        }
+        else if (outlineActive)
+        {
+            oldOutlinable.OutlineComp.OutlineMode = Outline.Mode.OutlineHidden;
+            outlineActive = false;
+        }
+
 
         if (wheelActive)
         {
@@ -56,6 +76,10 @@ public class Interaction : MonoBehaviour
                 interArr[id].Value();
                 CloseWheel();
             }
+
+            if (Input.GetKeyUp(KeyCode.F))
+                if (wheelActive)
+                    CloseWheel();
         }
     }
 
@@ -98,24 +122,24 @@ public class Interaction : MonoBehaviour
     //make this a for loop to simplify and remove FindIndex
     public int CheckClosestButton()
     {
-        GameObject nearestButton = null;
+        int nearestIndex = -1;
 
         float closestDistanceSqr = Mathf.Infinity;
 
         Vector3 mousePos = Input.mousePosition;
 
-        foreach (GameObject potentialTarget in wheelSelections)
+        for (int i = 0; i < wheelSelections.Length; i++)
         {
-            Vector3 directionToTarget = potentialTarget.transform.position - mousePos;
+            Vector3 directionToTarget = wheelSelections[i].transform.position - mousePos;
             float dSqrToTarget = directionToTarget.sqrMagnitude;
-            if(dSqrToTarget < closestDistanceSqr)
+            if (dSqrToTarget < closestDistanceSqr)
             {
                 closestDistanceSqr = dSqrToTarget;
-                nearestButton = potentialTarget;
+                nearestIndex = i;
             }
         }
 
-        return wheelSelections.FindIndex(nearestButton);
+        return nearestIndex;
     }
 
     public void SelectOnWheel(int id)
