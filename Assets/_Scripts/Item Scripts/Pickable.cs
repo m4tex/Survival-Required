@@ -13,42 +13,37 @@ public class Pickable : MonoBehaviour
     public bool canHold = true;
     private bool isHolding = false;
 
-    private Transform tempParent;
+    private static Transform tempParent;
     private Rigidbody rb;
 
-    private Vector3 iniRot;
-
-    private void Start()
+    public void Start()
     {
-        tempParent = Camera.main.transform.GetChild(0);
-        rb = transform.GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
+
+        if(tempParent == null)
+            tempParent = Camera.main.transform.GetChild(0);
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
-        distance = Vector3.Distance(transform.position, tempParent.transform.position);
-
-        if (distance >= 10f)
-        {
-            isHolding = false;
-        }
-
         //Check if it's holding
         if (isHolding)
         {
+            distance = Vector3.Distance(transform.position, tempParent.transform.position);
+            
             rb.angularVelocity = Vector3.zero;
             rb.velocity = (tempParent.position - transform.position) * force;
-            
+
+            if (distance > 4f)
+                Interact();
 
             if (Input.GetMouseButtonDown(1))
             {
                 rb.AddForce(tempParent.forward * throwForce);
-                isHolding = false;
+                Interact();
             }
-        }
-        else
-            rb.useGravity = true;
+        }    
     }
 
     public void Interact()
@@ -56,13 +51,14 @@ public class Pickable : MonoBehaviour
         if (canHold)
         {
             if (isHolding)
+            {
                 isHolding = false;
+                rb.useGravity = true;
+            }
             else
             {
                 isHolding = true;
-                iniRot = transform.eulerAngles;
                 rb.useGravity = false;
-                rb.detectCollisions = true;
             }
         }
     }

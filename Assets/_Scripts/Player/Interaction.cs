@@ -17,15 +17,15 @@ public class Interaction : MonoBehaviour
     IOutlinable oldOutlinable;
 
 
-    bool outlineActive;
+    private bool outlineActive;
 
-    bool wheelActive;
+    private bool wheelActive;
     public Transform interWheel;
     public Image interSelection;
     public TMPro.TMP_Text interDescText;
 
     public GameObject interactionUIPrefab;
-    public GameObject[] wheelSelections;
+    private GameObject[] wheelSelections;
     public static Interaction ins;
     private float degreesPerItem;
     private int currentSelection = -1;
@@ -117,6 +117,8 @@ public class Interaction : MonoBehaviour
         }
 
         wheelActive = true;
+
+        SelectOnWheel(0);
     }
 
     //make this a for loop to simplify and remove FindIndex
