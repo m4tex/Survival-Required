@@ -9,6 +9,7 @@ public class Pickable : MonoBehaviour
     float distance;
 
     public float force = 10;
+    public float maxVel;
 
     public bool canHold = true;
     private bool isHolding = false;
@@ -40,6 +41,7 @@ public class Pickable : MonoBehaviour
 
             if (Input.GetMouseButtonDown(1))
             {
+                rb.velocity = Vector3.zero;
                 rb.AddForce(tempParent.forward * throwForce);
                 Interact();
             }

@@ -16,7 +16,6 @@ public class Interaction : MonoBehaviour
     IOutlinable outlinable;
     IOutlinable oldOutlinable;
 
-
     private bool outlineActive;
 
     private bool wheelActive;
@@ -37,7 +36,7 @@ public class Interaction : MonoBehaviour
 
     private void Update()
     {
-        if(Physics.Raycast(cam.position, cam.forward, out hit))
+        if(Physics.Raycast(cam.position, cam.forward, out hit, interactionRange))
         {
             if(Input.GetKeyDown(KeyCode.E))
                 if (hit.transform.root.TryGetComponent<Pickable>(out pickable))
@@ -88,6 +87,7 @@ public class Interaction : MonoBehaviour
         interWheel.GetChild(2).DestroyChildren();
         interWheel.gameObject.Toggle(false);
         cam.GetComponent<MouseLook>().cameraLock = false;
+        currentSelection = -1;
         wheelActive = false;
     }
 
@@ -117,13 +117,14 @@ public class Interaction : MonoBehaviour
         }
 
         wheelActive = true;
-
-        SelectOnWheel(0);
     }
 
     //make this a for loop to simplify and remove FindIndex
     public int CheckClosestButton()
     {
+        if (interArr.Length == 1)
+            return 0;
+        
         int nearestIndex = -1;
 
         float closestDistanceSqr = Mathf.Infinity;
